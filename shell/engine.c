@@ -17,19 +17,29 @@
 int engine(char *buffer)
 {
 	char **args;
-	char *pathname;
+	char *pathname, **env;
 	char prepend[BUFFER_SIZE] = "/bin/";
 
 	pathname = malloc(sizeof(pathname) * BUFFER_SIZE);
-	args = tokenizer(buffer);
 
+	args = tokenizer(buffer);
 	if (args == NULL || pathname == NULL)
 	{
-		perror("Malloc could not allocate space");
+		perror("Malloc could not allocate space -> Engine");
 		exit(1);
 	}
 
 	pathname = args[0];
+	if (strcmp(pathname, "env") == 0 || strcmp(pathname, "printenv") == 0)
+	{
+		extern char **environ;
+
+		/** using the env variable we are looping thought the array of strings and printing them **/
+		for (env = environ; *env != NULL; env++)
+		{
+			printf("%s\n", *env);
+		}
+	}
 	if (pathname[0] == '/')
 	{
 		fork_process(pathname, args);
@@ -39,8 +49,8 @@ int engine(char *buffer)
 		_strcat(prepend, pathname);
 		fork_process(prepend, args);
 	}
-
-	
+	free(pathname);
+	free(buffer);
 }
 
 /**

@@ -9,7 +9,7 @@ int main(int ac, char **args)
 	if (isatty(fileno(stdin)))
 	{
 		/** interactive mode **/
-		imode(args);
+		imode();
 
 	}
 	else
