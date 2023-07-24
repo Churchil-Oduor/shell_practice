@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#define BUFFER_SIZE 1024
 
 /**
  * engine - runs the execve command and retturns
@@ -19,28 +18,30 @@
 
 int engine(char *buffer, char **env)
 {
-	char **args;
-	char *pathname;
+	char **args, *pathname;
+	char **e_vars; /** to be initialized with env **/
 	char prepend[BUFFER_SIZE] = "/bin/";
+	int count;
 
 	pathname = malloc(sizeof(pathname) * BUFFER_SIZE);
-
 	args = tokenizer(buffer);
 	if (args == NULL || pathname == NULL)
 	{
 		perror("Malloc could not allocate space -> Engine");
-		exit(1);
+		return (1);
 	}
 
 	pathname = args[0];
 	if (strcmp(pathname, "env") == 0 || strcmp(pathname, "printenv") == 0)
 	{
 
+		e_vars = env;
+		count = 0;
 		/** loop through passed env variables **/
-		while (*env != NULL)
+		while (e_vars[count] != NULL)
 		{
-			printf("%s\n", *env);
-			*env++;
+			printf("%s\n", e_vars[count]);
+			count++;
 		}
 	}
 	if (pathname[0] == '/')
@@ -53,7 +54,7 @@ int engine(char *buffer, char **env)
 		fork_process(prepend, args);
 	}
 	free(pathname);
-	free(buffer);
+	return (0);
 }
 
 /**

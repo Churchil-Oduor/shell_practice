@@ -17,7 +17,7 @@
 char **tokenizer(char *str)
 {
 	char **args;
-	int num_tokens, index;
+	int index;
 	char *token;
 
 	/** intializing space for args to hold the array of strings **/
@@ -47,7 +47,7 @@ char **tokenizer(char *str)
 		index++;
 		token = strtok(NULL, " ");
 	}
+
 	args[index] = NULL;
 	return (args);
-
 }

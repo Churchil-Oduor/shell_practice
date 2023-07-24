@@ -3,20 +3,17 @@
 #include <stdio.h>
 #include <string.h>
 #include "main.h"
-#define BUFFER_SIZE 1024
 
 /**
  * nmode - this is the non_interactive mode code
- *
- * @args: Arguments passed to the shell.
  * @env: list of environment variables
+ *
  */
 
-void nmode(char *args, char **env)
+void nmode(char **env)
 {
 	char buffer[BUFFER_SIZE];
 	ssize_t read_bytes;
-	char path[BUFFER_SIZE] = "/bin/";
 
 	read_bytes = read(STDIN_FILENO, buffer, BUFFER_SIZE) - 1;
 

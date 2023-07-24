@@ -4,7 +4,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
 /**
  * imode - this is the interactive mode.
  * @env: list of environment variables.
@@ -29,14 +28,15 @@ void imode(char **env)
 		{
 			line[read_bytes - 1] = '\0';
 		}
-		else
+		else if	(read_bytes == -1)
 		{
-			printf("\n");
-			break;
+			perror("Could not read input");
+			exit(1);
 		}
 
 		if (strcmp(line, "exit") == 0)
 			break;
+
 		engine(line, env);
 	}
 }

@@ -1,7 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-void nmode(char *args, char **env);
+#define BUFFER_SIZE 1024
+void nmode(char **env);
 void imode(char **env);
 char *_strcat(char *src, char *dest);
 char **tokenizer(char *str);
