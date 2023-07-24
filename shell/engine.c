@@ -6,18 +6,21 @@
 #include <sys/wait.h>
 
 #define BUFFER_SIZE 1024
+
 /**
  * engine - runs the execve command and retturns
  * execution back to calling function safely.
  *
  * @buffer: input passed either in interractive or non-interactive mode.
+ * @env: list of environment variables.
+ *
  * Return: 0 if success or 1 on failure.
  */
 
-int engine(char *buffer)
+int engine(char *buffer, char **env)
 {
 	char **args;
-	char *pathname, **env;
+	char *pathname;
 	char prepend[BUFFER_SIZE] = "/bin/";
 
 	pathname = malloc(sizeof(pathname) * BUFFER_SIZE);
@@ -32,12 +35,12 @@ int engine(char *buffer)
 	pathname = args[0];
 	if (strcmp(pathname, "env") == 0 || strcmp(pathname, "printenv") == 0)
 	{
-		extern char **environ;
 
-		/** using the env variable we are looping thought the array of strings and printing them **/
-		for (env = environ; *env != NULL; env++)
+		/** loop through passed env variables **/
+		while (*env != NULL)
 		{
 			printf("%s\n", *env);
+			*env++;
 		}
 	}
 	if (pathname[0] == '/')
@@ -56,6 +59,10 @@ int engine(char *buffer)
 /**
  * fork_process - creates a child that does execve and returns
  * processing back to parent process.
+ *
+ * @pathname: pathname to the executable in the environment.
+ * @args: arguments passed.
+ * Return: A 0 on succcess else 1.
  */
 int fork_process(char *pathname, char **args)
 {
@@ -68,16 +75,15 @@ int fork_process(char *pathname, char **args)
 	{
 		perror("Could not form child");
 	}
-	else if(child == 0)
+	else if (child == 0)
 	{
 		/** child process **/
 		res_exec = execve(pathname, args, NULL);
 		if (res_exec == -1)
 		{
 			printf("%s: No such file or directory\n", pathname);
+			return (1);
 		}
-
-		exit(1);
 	}
 	else
 	{

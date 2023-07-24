@@ -6,27 +6,25 @@
 #define BUFFER_SIZE 1024
 
 /**
- * nmode - this is the non_interactive mode
- * code.
+ * nmode - this is the non_interactive mode code
  *
- * @exec_name: name of our executable file.
+ * @args: Arguments passed to the shell.
+ * @env: list of environment variables
  */
 
-void nmode(char *exec_name)
+void nmode(char *args, char **env)
 {
 	char buffer[BUFFER_SIZE];
-	ssize_t read_bytes, res_exec;
-	char **args;
+	ssize_t read_bytes;
 	char path[BUFFER_SIZE] = "/bin/";
 
 	read_bytes = read(STDIN_FILENO, buffer, BUFFER_SIZE) - 1;
-	args = malloc(sizeof(args) * BUFFER_SIZE);
 
 	if (read_bytes > 0)
 	{
 		/** Null terminating the string read at the end**/
 		buffer[read_bytes] = '\0';
-		engine(buffer);
+		engine(buffer, env);
 	}
 	else
 	{

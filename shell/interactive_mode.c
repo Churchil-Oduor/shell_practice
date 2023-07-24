@@ -7,11 +7,11 @@
 #define BUFFER_SIZE 1024
 /**
  * imode - this is the interactive mode.
+ * @env: list of environment variables.
  *
- * @args: string array passed through the terminal.
  */
 
-void imode()
+void imode(char **env)
 {
 	char *line;
 	ssize_t read_bytes;
@@ -37,6 +37,6 @@ void imode()
 
 		if (strcmp(line, "exit") == 0)
 			break;
-		engine(line);
+		engine(line, env);
 	}
 }
