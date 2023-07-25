@@ -15,8 +15,10 @@ void imode(char **env)
 	char *line;
 	ssize_t read_bytes;
 	size_t len;
+	int mode;
 
 	len = 0;
+	mode = 1;
 	while (1)
 	{
 
@@ -37,6 +39,6 @@ void imode(char **env)
 		if (strcmp(line, "exit") == 0)
 			break;
 
-		engine(line, env);
+		engine(line, env, mode);
 	}
 }

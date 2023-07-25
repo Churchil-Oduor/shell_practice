@@ -12,17 +12,20 @@
  *
  * @buffer: input passed either in interractive or non-interactive mode.
  * @env: list of environment variables.
+ * @mode: mode of operation. 1 is interactive mode
+ * and 0 is non-interactive mode.
  *
  * Return: 0 if success or 1 on failure.
  */
 
-int engine(char *buffer, char **env)
+int engine(char *buffer, char **env, int mode)
 {
 	char **args, *pathname;
 	char **e_vars; /** to be initialized with env **/
 	char prepend[BUFFER_SIZE] = "/bin/";
 	int count;
 
+	e_vars = env;
 	pathname = malloc(sizeof(pathname) * BUFFER_SIZE);
 	args = tokenizer(buffer);
 	if (args == NULL || pathname == NULL)
@@ -30,28 +33,29 @@ int engine(char *buffer, char **env)
 		perror("Malloc could not allocate space -> Engine");
 		return (1);
 	}
-
 	pathname = args[0];
 	if (strcmp(pathname, "env") == 0 || strcmp(pathname, "printenv") == 0)
 	{
-
-		e_vars = env;
 		count = 0;
 		/** loop through passed env variables **/
 		while (e_vars[count] != NULL)
-		{
-			printf("%s\n", e_vars[count]);
-			count++;
-		}
+			printf("%s\n", e_vars[count++]);
 	}
 	if (pathname[0] == '/')
 	{
-		fork_process(pathname, args);
+		if (mode == 1)
+			fork_process(pathname, args, mode);
+		else
+			fork_process(pathname, e_vars, mode);
 	}
 	else
 	{
 		_strcat(prepend, pathname);
-		fork_process(prepend, args);
+
+		if (mode == 1)
+			fork_process(prepend, args, mode);
+		else
+			fork_process(prepend, e_vars, mode);
 	}
 	free(pathname);
 	return (0);
@@ -63,10 +67,15 @@ int engine(char *buffer, char **env)
  *
  * @pathname: pathname to the executable in the environment.
  * @args: arguments passed.
+ * @mode: mode of execution.
+ *
  * Return: A 0 on succcess else 1.
  */
-int fork_process(char *pathname, char **args)
+
+int fork_process(char *pathname, char **args, int mode)
 {
+
+
 	pid_t child;
 	ssize_t res_exec;
 	int status;
@@ -82,7 +91,10 @@ int fork_process(char *pathname, char **args)
 		res_exec = execve(pathname, args, NULL);
 		if (res_exec == -1)
 		{
-			printf("%s: No such file or directory\n", pathname);
+			if (mode == 1)
+				printf("%s: No such file or directory\n", pathname);
+			else
+				printf("%s: 1: %s: not found\n", args[0], args[1]);
 			return (1);
 		}
 	}

@@ -37,7 +37,7 @@ int main(int ac, char **args, char **env)
 	else
 	{
 		/** non interactive mode **/
-		nmode(env);
+		nmode(args);
 
 	}
 	return (0);
