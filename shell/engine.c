@@ -20,7 +20,7 @@
 
 int engine(char *buffer, char **env, int mode)
 {
-	char **args, *pathname;
+	char **args, *pathname, *buffer_copy;
 	char **e_vars; /** to be initialized with env **/
 	char prepend[BUFFER_SIZE] = "/bin/";
 	int count;
@@ -55,7 +55,7 @@ int engine(char *buffer, char **env, int mode)
 		if (mode == 1)
 			fork_process(prepend, args, mode);
 		else
-			fork_process(prepend, e_vars, mode);
+			fork_process(pathname, e_vars, mode);
 	}
 	free(pathname);
 	return (0);
@@ -88,13 +88,23 @@ int fork_process(char *pathname, char **args, int mode)
 	else if (child == 0)
 	{
 		/** child process **/
-		res_exec = execve(pathname, args, NULL);
+		if (mode == 0)
+		{
+			char prepend[BUFFER_SIZE] = "/bin/";
+
+			_strcat(prepend, pathname);
+			res_exec = execve(prepend, args, NULL);
+		}
+		else
+		{
+			res_exec = execve(pathname, args, NULL);
+		}
 		if (res_exec == -1)
 		{
 			if (mode == 1)
 				printf("%s: No such file or directory\n", pathname);
 			else
-				printf("%s: 1: %s: not found\n", args[0], args[1]);
+				printf("%s: 1: %s: not found\n", args[0], pathname);
 			return (1);
 		}
 	}
